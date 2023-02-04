@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Options FIrst</title>
+
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet"/>
+     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
+</head>
+<body class="graph-body">
+    <div class="panel panel-primary">
+                <div class="panel-heading">
+                    BANK NIFTY
+                    <a href="/banknifty"><span class="pull-right clickable panel-toggle panel-button-tab-left"><em
+                            class="fa fa-times"></em></span></a></div>
+                <div class="panel-body">
+                    <div class="canvas-wrapper">
+                             <div class="banknifty-Graph" id="chartContainer" style="height:80vh"></div>
+                    </div>
+                </div>
+
+
+    <script src="https://kit.fontawesome.com/9402b4fbd9.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/addons/jquery.canvasjs.min.js' %}"></script>
+    <script>
+            var dataLTP = [];
+            var dataLOW = [];
+            var dataHIGH = [];
+            var dataAVG = [];
+            var chart = null;
+
+            {% for row in data %}
+            var time = new Date(0,0,0,
+					parseInt("{{row.LTT}}".split(":")[0]),
+					parseInt("{{row.LTT}}".split(":")[1]),
+					parseInt("{{row.LTT}}".split(":")[2]),0
+				);
+            dataLTP.push({ x: time,  y:parseInt({{row.LTP}})  });
+            dataLOW.push({ x: time,  y:parseInt({{row.Low}})  });
+            dataHIGH.push({ x: time,  y:parseInt({{row.High}})  });
+            dataAVG.push({ x: time, y:parseInt({{row.AVG}}) });
+        {% endfor %}
+
+        //console.log ({{ data }});
+        window.onload = function(){
+                chart = new CanvasJS.Chart("chartContainer", {
+                theme: "light2",
+                zoomEnabled: true,
+                axisX: {
+                    valueFormatString: "HH:mm:ss"
+                },
+
+                legend:{
+                    cursor: "pointer",
+                    fontSize: 16,
+                    itemclick: toggleDataSeries
+                },
+                toolTip:{
+                    shared: true
+                },
+                data: [{
+                        name: "LTP",
+                        type: "line",
+                        showInLegend: true,
+                        dataPoints: dataLTP,
+                        xValueFormatString: "HH:mm:ss"
+                    },
+                    {
+                        name: "High",
+                        type: "line",
+                        showInLegend: true,
+                        dataPoints:dataHIGH
+                    },
+                    {
+                        name: "LOW",
+                        type: "line",
+                        showInLegend: true,
+                        dataPoints: dataLOW
+                    },
+                    {
+                        name: "AVG",
+                        type: "line",
+                        showInLegend: true,
+                        dataPoints: dataAVG,
+                        lineColor: "cyan"
+                    }]
+            });
+            chart.render();
+            function toggleDataSeries(e){
+            console.log(e);
+            console.log(e.dataSeries.visible);
+            if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                e.dataSeries.visible = false;
+            }
+            else{
+                e.dataSeries.visible = true;
+            }
+            chart.render();
+        }
+        };
+
+        function fetchBankNiftyCont(){
+          var result = $.ajax({
+            type: "GET",
+            url: "/fetchbanknifty",
+            async: false
+          }).complete(function(){
+            setTimeout(function(){fetchBankNiftyCont();}, 10000);
+          }).responseText;
+
+           if(!result){
+                console.log("Not Connected");
+            }
+            else{
+                var jsonResult = JSON.parse(result);
+                var time = new Date(0,0,0,
+                        parseInt(jsonResult[0].split(":")[0]),
+                        parseInt(jsonResult[0].split(":")[1]),
+                        parseInt(jsonResult[0].split(":")[2]),0
+                    );
+                dataLTP.push({ x: time,  y:parseInt(jsonResult[4])  });
+                dataLOW.push({ x: time,  y:parseInt(jsonResult[6])  });
+                dataHIGH.push({ x: time,  y:parseInt(jsonResult[5])  });
+                dataAVG.push({ x: time,  y:parseInt( jsonResult[16] )});
+                chart.render();
+                }
+            }
+        $(document).ready(function(){
+          fetchBankNiftyCont();
+         });
+
+    </script>
+
+</body>
+
+
+</html>

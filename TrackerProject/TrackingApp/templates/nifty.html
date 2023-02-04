@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Option First</title>
+
+    <!--{% static 'css/bootstrap.css' %}-->
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/font-awesome.min.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/datepicker3.css' %}" rel="stylesheet" />
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    <!-- MDBootstrap Datatables  -->
+    <link
+      href="{% static 'css/addons/datatables.min.css' %}"
+      rel="stylesheet"
+    />
+
+    <!--Custom Font-->
+    <link
+      href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i"
+      rel="stylesheet"
+    />
+    <!--[if lt IE 9]>
+      <script src="{% static 'js/html5shiv.js' %}"></script>
+      <script src="{% static 'js/respond.min.js' %}"></script>
+    <![endif]-->
+    <script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
+    <script
+      type="text/javascript"
+      src="{% static 'js/addons/jquery.canvasjs.min.js' %}"
+    ></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button
+            type="button"
+            class="navbar-toggle collapsed"
+            data-toggle="collapse"
+            data-target="#sidebar-collapse"
+          >
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#"><span>Options</span>&nbsp;First</a>
+        </div>
+      </div>
+      <!-- /.container-fluid -->
+    </nav>
+    <div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+      <div class="profile-sidebar">
+        <div class="profile-userpic">
+          <img
+            src="{{ user.profile.image.url }}"
+            class="img-responsive"
+            alt=""
+          />
+        </div>
+        <div class="profile-usertitle">
+          <div class="profile-usertitle-name">{{ user.username }}</div>
+          <div class="profile-usertitle-status" id="status">
+            <span class="indicator label-success"></span>Online
+          </div>
+        </div>
+        <div class="clear"></div>
+      </div>
+      <div class="divider"></div>
+      <form role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search" />
+        </div>
+      </form>
+      <ul class="nav menu">
+        <li>
+          <a href="/banknifty"
+            ><em class="fa fa-dashboard">&nbsp;</em>Bank Nifty</a
+          >
+        </li>
+        <li>
+          <a href="/fetchbankniftygraph"
+            ><em class="fa fa-dashboard">&nbsp;</em> Bank Nifty Graph</a
+          >
+        </li>
+        <li class="active">
+          <a href="#"><em class="fa fa-calendar">&nbsp;</em> Nifty</a>
+        </li>
+        <li>
+          <a href="logout"><em class="fa fa-power-off">&nbsp;</em> Logout</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1 class="page-header">{{ index }}</h1>
+          <div class="last-refresh">
+            <div>( Last refresh : <i id="last-refesh-time"></i> sec ago )</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row custom-top-row">
+        <div class="col-xs-6 col-lg-4">
+          <div class="row custom-col custom-col-left">
+            <div class="col-xs-6 col-lg-6" style="color: #979899">SPOT</div>
+            <div class="col-xs-6 col-lg-6">
+              <i id="col-spot-icon" class="fa fa-arrow-up"></i>&nbsp;
+              <div id="col-spot" class="recent-top-values">
+                {{ recent.SPOT }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-6 col-lg-4">
+          <div class="row custom-col custom-col-right custom-col-left">
+            <div class="col-xs-6 col-lg-6" style="color: #979899">
+              Prev LTP<span>({{ prevLTPstrike }})</span>
+            </div>
+            <div class="col-xs-6 col-lg-6">
+              <i id="col-prevLTP-icon" class="fa fa-arrow-up"></i> &nbsp;
+              <div id="col-prevLTP" class="recent-top-values">
+                {{ recent.PrevLTP }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row custom-top-row">
+        <div class="col-xs-6 col-lg-4">
+          <div class="row custom-col custom-col-left">
+            <div class="col-xs-6 col-lg-6" style="color: #979899">
+              CE Max COI
+            </div>
+            <div class="col-xs-6 col-lg-6">
+              <div id="col-ce-max" class="recent-top-values">
+                {{ recent.CE_Max }}&nbsp;@&nbsp;{{recent.CE_MaxStr}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-6 col-lg-4">
+          <div class="row custom-col custom-col-left custom-col-right">
+            <div class="col-xs-6 col-lg-6" style="color: #979899">
+              PUT Max COI
+            </div>
+            <div class="col-xs-6 col-lg-6">
+              <div id="col-pe-max" class="recent-top-values">
+                {{ recent.PE_Max }}&nbsp;@&nbsp;{{recent.PE_MaxStr}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row custom-top-row">
+        <div class="col-xs-6 col-lg-4">
+          <div class="row custom-col custom-col-left">
+            <div class="col-xs-6 col-lg-6" style="color: #979899">
+              CE Total COI
+            </div>
+            <div class="col-xs-6 col-lg-6">
+              <div id="col-CE-total" class="recent-top-values"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-6 col-lg-4">
+          <div class="row custom-col custom-col-left custom-col-right">
+            <div class="col-xs-6 col-lg-6" style="color: #979899">
+              PE Total COI
+            </div>
+            <div class="col-xs-6 col-lg-6">
+              <div id="col-PE-total" class="recent-top-values"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-6 col-lg-4">
+          <div class="row custom-col custom-col-right">
+            <div class="col-xs-3 col-lg-3" style="color: #979899">DIFF</div>
+            <div class="col-xs-9 col-lg-9">
+              <div id="col-coi-diff" class="recent-top-values"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--- <div class="row custom-top-row">
+        <div class="col-xs-6 col-lg-4">
+          <div class="row custom-col custom-col-left">
+            <div class="col-xs-6 col-lg-6" style="color: #979899">SPOT</div>
+            <div class="col-xs-6 col-lg-6">
+              <i id="col-spot-icon" class="fa fa-arrow-up"></i>&nbsp;
+              <div id="col-spot" class="recent-top-values">
+                {{ recent.SPOT }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-6 col-lg-4">
+          <div class="row custom-col custom-col-right">
+            <div class="col-xs-6 col-lg-6" style="color: #979899">
+              Prev LTP<span>({{ prevLTPstrike }})</span>
+            </div>
+            <div class="col-xs-6 col-lg-6">
+              <i id="col-prevLTP-icon" class="fa fa-arrow-up"></i> &nbsp;
+              <div id="col-prevLTP" class="recent-top-values">
+                {{ recent.PrevLTP }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row custom-top-row">
+        <div class="col-xs-6 col-lg-4">
+          <div class="row custom-col custom-col-left">
+            <div class="col-xs-6 col-lg-6" style="color: #979899">SPOT</div>
+            <div class="col-xs-6 col-lg-6">
+              <i id="col-spot-ico" class="fa fa-arrow-up"></i>&nbsp;
+              <div id="col-spo" class="recent-top-values">
+                {{ recent.SPOT }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-6 col-lg-4">
+          <div class="row custom-col custom-col-right">
+            <div class="col-xs-6 col-lg-6" style="color: #979899">
+              Prev LTP<span>({{ prevLTPstrike }})</span>
+            </div>
+            <div class="col-xs-6 col-lg-6">
+              <i id="col-prevLTP-ico" class="fa fa-arrow-up"></i> &nbsp;
+              <div id="col-prevLT" class="recent-top-values">
+                {{ recent.PrevLTP }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        --->
+      <div class="panel panel-container">
+        <div class="row">
+          <div class="col-xs-3 col-md-3 col-lg-1-5">
+            <div class="panel panel-teal panel-widget border-right">
+              <div class="row no-padding">
+                <em class="fa fa-xl fa-shopping-cart color-blue"></em>
+                <div class="col-large" id="col-ltt">{{ recent.LTT }}</div>
+                <div class="text-muted">LTT</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xs-3 col-md-3 col-lg-1-5 no-padding">
+            <div class="panel panel-teal panel-widget border-right">
+              <div class="row no-padding">
+                <em class="fa fa-xl fa-shopping-cart color-blue"></em>
+                <div class="col-large" id="col-fut">{{ recent.FUT }}</div>
+                <div class="text-muted">FUT</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xs-3 col-md-3 col-lg-1-5 no-padding">
+            <div class="panel panel-teal panel-widget border-right">
+              <div class="row no-padding">
+                <em class="fa fa-xl fa-shopping-cart color-blue"></em>
+                <div class="col-large" id="col-atmstrike">
+                  {{ recent.ATMstrike }}
+                </div>
+                <div class="text-muted">ATMstrike</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xs-3 col-md-3 col-lg-1-5 no-padding">
+            <div class="panel panel-teal panel-widget border-right">
+              <div class="row no-padding">
+                <em class="fa fa-xl fa-shopping-cart color-blue"></em>
+                <div class="col-large" id="col-prevclose">
+                  {{ recent.PrevClose }}
+                </div>
+                <div class="text-muted">PrevClose</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xs-3 col-md-3 col-lg-1-5 no-padding">
+            <div class="panel panel-teal panel-widget border-right">
+              <div class="row no-padding">
+                <em class="fa fa-xl fa-shopping-cart color-blue"></em>
+                <div class="col-large" id="col-ltp">{{ recent.LTP }}</div>
+                <div class="text-muted">LTP</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xs-3 col-md-3 col-lg-1-5 no-padding">
+            <div class="panel panel-teal panel-widget border-right">
+              <div class="row no-padding">
+                <em class="fa fa-xl fa-shopping-cart color-blue"></em>
+                <div class="col-large" id="col-high">{{ recent.High }}</div>
+                <div class="text-muted">High</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xs-3 col-md-3 col-lg-1-5 no-padding">
+            <div class="panel panel-teal panel-widget border-right">
+              <div class="row no-padding">
+                <em class="fa fa-xl fa-shopping-cart color-blue"></em>
+                <div class="col-large" id="col-low">{{ recent.Low }}</div>
+                <div class="text-muted">Low</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xs-3 col-md-3 col-lg-1-5 no-padding">
+            <div class="panel panel-teal panel-widget border-right">
+              <div class="row no-padding">
+                <em class="fa fa-xl fa-shopping-cart color-blue"></em>
+                <div class="col-large" id="col-netdecay">
+                  {{ recent.NetDecay }}
+                </div>
+                <div class="text-muted">NetDecay</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--/.row-->
+      </div>
+
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          Existing Table
+          <span class="pull-right clickable panel-toggle"
+            ><em class="fa fa-toggle-up"></em
+          ></span>
+        </div>
+        <div class="panel-body">
+          <!--table-->
+          <table
+            id="dtHorizontalVerticalExample"
+            class="table table-striped table-bordered table-sm"
+            cellspacing="0"
+            width="100%"
+          >
+            <thead>
+              <tr>
+                {% for header in headers %}
+                <th>{{ header }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in data_first %}
+              <tr>
+                <td>{{row.LTT}}</td>
+                <td>{{row.FUT}}</td>
+                <td>{{row.ATMstrike}}</td>
+                <td>{{row.PrevClose}}</td>
+                <td>{{row.LTP}}</td>
+                <td>{{row.High}}</td>
+                <td>{{row.Low}}</td>
+                <td>{{row.NetDecay}}</td>
+                <td>{{row.CE_COI}}</td>
+                <td>{{row.PE_COI}}</td>
+                <td>{{row.CE_Max}}</td>
+                <td>{{row.PE_Max}}</td>
+                <td>{{row.CE_MaxStr}}</td>
+                <td>{{row.PE_MaxStr}}</td>
+              </tr>
+              {% endfor %} {% for row in data_last %}
+              <tr>
+                <td>{{row.LTT}}</td>
+                <td>{{row.FUT}}</td>
+                <td>{{row.ATMstrike}}</td>
+                <td>{{row.PrevClose}}</td>
+                <td>{{row.LTP}}</td>
+                <td>{{row.High}}</td>
+                <td>{{row.Low}}</td>
+                <td>{{row.NetDecay}}</td>
+                <td>{{row.CE_COI}}</td>
+                <td>{{row.PE_COI}}</td>
+                <td>{{row.CE_Max}}</td>
+                <td>{{row.PE_Max}}</td>
+                <td>{{row.CE_MaxStr}}</td>
+                <td>{{row.PE_MaxStr}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <center>
+            <a class="btn btn-lg btn-primary" href="/download/NIFTY" download>
+              <i class="fa fa-download"></i> &nbsp; Download</a
+            >
+          </center>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              Line Chart
+              <span
+                class="pull-right clickable panel-toggle panel-button-tab-left"
+                ><em class="fa fa-toggle-up"></em
+              ></span>
+            </div>
+            <div class="panel-body">
+              <div class="canvas-wrapper">
+                <div
+                  id="chartContainer"
+                  style="height: 300px; width: 100%"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--/.main-->
+
+    <script
+      src="https://kit.fontawesome.com/9402b4fbd9.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="{% static 'js/jquery-1.11.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/chart.min.js' %}"></script>
+    <script src="{% static 'js/chart-data.js' %}"></script>
+    <script src="{% static 'js/easypiechart.js' %}"></script>
+    <script src="{% static 'js/easypiechart-data.js' %}"></script>
+    <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+    <!-- MDBootstrap Datatables  -->
+    <script
+      type="text/javascript"
+      src="{% static 'js/addons/datatables.min.js' %}"
+    ></script>
+
+    <script>
+          function diff_seconds(dt1 ,dt2){
+              var diff =(dt2.getTime() - dt1.getTime()) / 1000;
+              return Math.abs(Math.round(diff));
+          }
+
+          var dataLTP = [];
+          var dataLOW = [];
+          var dataHIGH = [];
+          var dataAVG = [];
+          var chart = null;
+
+          // Fetch chart Data on Page refresh
+          {% for row in data_last %}
+              var time = new Date(0,0,0,
+      	parseInt("{{row.LTT}}".split(":")[0]),
+      	parseInt("{{row.LTT}}".split(":")[1]),
+      	parseInt("{{row.LTT}}".split(":")[2]),0
+      );
+              dataLTP.push({ x: time,  y:parseInt({{row.LTP}})  });
+              dataLOW.push({ x: time,  y:parseInt({{row.Low}})  });
+              dataHIGH.push({ x: time,  y:parseInt({{row.High}})  });
+              dataAVG.push({ x: time, y:parseInt({{row.AVG}})   });
+          {% endfor %}
+
+
+         //Function to create table on page refresh
+
+          $(document).ready(function () {
+              $('#dtHorizontalVerticalExample').DataTable({
+                  "scrollX": true,
+                  "scrollY": 200,
+              });
+              $('.dataTables_length').addClass('bs-select');
+           });
+
+          //function to update refresh time on Page load
+
+          window.onload = function(){
+              //Add Something here if you want to update on Refresh
+                document.getElementById("col-pe-max").innerHTML = ({{recent.PE_Max}}).toLocaleString('en-US') + " @ " + {{recent.PE_MaxStr}};
+                document.getElementById("col-ce-max").innerHTML = ({{recent.CE_Max}}).toLocaleString('en-US') + " @ " + {{recent.CE_MaxStr}};
+                document.getElementById("col-CE-total").innerHTML = ({{recent.CE_COI}}).toLocaleString('en-US');
+                document.getElementById("col-PE-total").innerHTML = ({{recent.PE_COI}}).toLocaleString('en-US');
+                var coi_diff = document.getElementById("col-coi-diff");
+                var diff = {{recent.PE_COI}} - {{recent.CE_COI}};
+                if (diff >= 2000000){
+                coi_diff.innerHTML = (diff).toLocaleString('en-US') + " &nbsp;<span>(BULLISH)</span>";
+                coi_diff.style.color = "#32a836";
+                }
+                else if(diff <= -2000000){
+                coi_diff.innerHTML = (diff).toLocaleString('en-US') + " &nbsp;<span>(BEARISH)</span>";
+                coi_diff.style.color = "red";
+                }
+                else{
+                    if(diff > 0){
+                        coi_diff.innerHTML = (diff).toLocaleString('en-US') + " &nbsp;<span style='color:black'>(NEUTRAL)</span>";
+                        coi_diff.style.color = '#32a836';
+                    }
+                    else{
+                        coi_diff.innerHTML = (diff).toLocaleString('en-US') + " &nbsp;<span style='color:black'>(NEUTRAL)</span>";
+                        coi_diff.style.color = 'red';
+                    }
+                }
+
+              var time_field = document.getElementById("last-refesh-time");
+              var now = new Date();
+              tmp = "{{recent.LTT}}";
+              var old = new Date(now.getFullYear(),now.getMonth(),now.getDate(),tmp.substr(0,2),tmp.substr(3,2),tmp.substr(6,2),0);
+              time_field.innerHTML = diff_seconds(now,old);
+
+                  //canvasjs chart create on page load
+
+                  chart = new CanvasJS.Chart("chartContainer", {
+                  theme: "light2",
+                  zoomEnabled: true,
+                  axisX: {
+                      valueFormatString: "HH:mm:ss"
+                  },
+
+                  legend:{
+                      cursor: "pointer",
+                      fontSize: 16,
+                      itemclick: toggleDataSeries
+                  },
+                  toolTip:{
+                      shared: true
+                  },
+                  data: [{
+                          name: "LTP",
+                          type: "line",
+                          showInLegend: true,
+                          dataPoints: dataLTP,
+                          xValueFormatString: "HH:mm:ss"
+                      },
+                      {
+                          name: "High",
+                          type: "line",
+                          showInLegend: true,
+                          dataPoints:dataHIGH
+                      },
+                      {
+                          name: "LOW",
+                          type: "line",
+                          showInLegend: true,
+                          dataPoints: dataLOW
+                      },
+                      {
+                          name: "AVG",
+                          type: "line",
+                          showInLegend: true,
+                          dataPoints: dataAVG,
+                          lineColor: "cyan"
+                      }]
+              });
+              chart.render();
+              function toggleDataSeries(e){
+                  console.log(e.dataSeries.visible);
+                  if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                      e.dataSeries.visible = false;
+                  }
+                  else{
+                      e.dataSeries.visible = true;
+                  }
+                  chart.render();
+              }
+
+
+          };
+
+
+
+
+          //Function to update refresh time every second
+          var intervalId = window.setInterval(function(){
+              var time_field = document.getElementById("last-refesh-time");
+              var now = new Date();
+              tmp = document.getElementById("col-ltt").innerHTML;
+              var old = new Date(now.getFullYear(),now.getMonth(),now.getDate(),tmp.substr(0,2),tmp.substr(3,2),tmp.substr(6,2),0);
+              time_field.innerHTML = diff_seconds(now,old);
+          }, 1000);
+
+
+          //Funtion to convert number into comma seprated format
+
+          function commaSeprated(num){
+              return parseInt(num).toLocaleString('en-US');
+          }
+
+          //Function to fetch nifty continiously every 10 Seconds
+
+          function fetchNiftyCont(){
+            var result = $.ajax({
+              type: "GET",
+              url: "/fetchnifty",
+              async: false
+            }).complete(function(){
+              setTimeout(function(){fetchNiftyCont();}, 10000);
+            }).responseText;
+
+
+              if(!result){
+                  var status= document.getElementById("status");
+                  status.innerHTML = '<span class="indicator label-danger"></span>Offline';
+              }
+              else{
+              var jsonResult = JSON.parse(result);
+              var status= document.getElementById("status");
+              status.innerHTML = '<span class="indicator label-success"></span>Online';
+              $('#col-ltt').html(jsonResult[0]);
+              $('#col-fut').html(jsonResult[1]);
+              $('#col-atmstrike').html(jsonResult[2]);
+              $('#col-prevclose').html(jsonResult[3]);
+              $('#col-ltp').html(jsonResult[4]);
+              $('#col-high').html( jsonResult[5]);
+              $('#col-low').html(jsonResult[6]);
+              $('#col-netdecay').html(jsonResult[7]);
+              $('#col-spot').html(jsonResult[14]);
+              $('#col-prevLTP').html(jsonResult[15]);
+
+              if(parseInt(jsonResult[14]) <= parseInt(jsonResult[1]))
+              {
+                  document.getElementById("col-spot-icon").className = "fa fa-arrow-down";
+                  document.getElementById("col-spot-icon").style.color = "red";
+                  document.getElementById("col-spot").style.color  =  "red";
+      var diff = parseInt(jsonResult[1]) - parseInt(jsonResult[14]);
+      $('#col-spot').append("&nbsp;(-"+diff+")");
+              }
+              else
+              {
+                  document.getElementById("col-spot-icon").className = "fa fa-arrow-up";
+                  document.getElementById("col-spot-icon").style.color = "#32a836";
+                  document.getElementById("col-spot").style.color = "#32a836" ;
+      var diff = parseInt(jsonResult[14]) - parseInt(jsonResult[1]);
+      $('#col-spot').append("&nbsp;(+"+diff+")");
+              }
+
+
+              if(parseInt(jsonResult[15]) < parseInt(jsonResult[3]))
+              {
+                  document.getElementById("col-prevLTP-icon").className = "fa fa-arrow-down";
+                  document.getElementById("col-prevLTP-icon").style.color = "red";
+                  document.getElementById("col-prevLTP").style.color  =  "red";
+      var diff = parseInt(jsonResult[3]) - parseInt(jsonResult[15]);
+      $('#col-prevLTP').append("&nbsp;(-"+diff+")");
+              }
+              else
+              {
+                  document.getElementById("col-prevLTP-icon").className = "fa fa-arrow-up";
+                  document.getElementById("col-prevLTP-icon").style.color = "#32a836";
+                  document.getElementById("col-prevLTP").style.color = "#32a836" ;
+      var diff = parseInt(jsonResult[15]) - parseInt(jsonResult[3]);
+      $('#col-prevLTP').append("&nbsp;(+"+diff+")");
+              }
+
+              var mid = ""
+              for(var i=0;i < jsonResult.length-3; i++){
+                   mid += "<td>"+jsonResult[i]+"</td>";
+              }
+
+              $("#dtHorizontalVerticalExample tbody").append("<tr>"+mid+"</tr>");
+
+
+              if(dataLTP.length >= 200){
+                  dataLTP.shift();
+                  dataHIGH.shift();
+                  dataLOW.shift();
+                  dataAVG.shift();
+              }
+              var time = new Date(0,0,0,
+      	parseInt(jsonResult[0].split(":")[0]),
+      	parseInt(jsonResult[0].split(":")[1]),
+      	parseInt(jsonResult[0].split(":")[2]),0
+      );
+              dataLTP.push({ x: time,  y:parseInt(jsonResult[4])  });
+              dataLOW.push({ x: time,  y:parseInt(jsonResult[6])  });
+              dataHIGH.push({ x: time,  y:parseInt(jsonResult[5])  });
+              dataAVG.push({ x: time,  y:parseInt( jsonResult[16] )});
+              chart.render();
+
+              $('#col-ce-max').html(commaSeprated(jsonResult[10]) + " @ " + jsonResult[12]);
+              $('#col-pe-max').html(commaSeprated(jsonResult[11]) + " @ " + jsonResult[13]);
+              $('#col-CE-total').html(commaSeprated(jsonResult[8]));
+              $('#col-PE-total').html(commaSeprated(jsonResult[9]));
+
+              var diff = parseInt(jsonResult[9]) - parseInt(jsonResult[8]);
+              var coi_diff = document.getElementById("col-coi-diff");
+
+              if(diff >= 2000000){
+                    $('#col-coi-diff').html(commaSeprated(diff) +" &nbsp;<span>(BULLISH)</span>");
+                    coi_diff.style.color = "#32a836";
+              }
+              else if(diff <= -2000000){
+                $('#col-coi-diff').html(commaSeprated(diff) + " &nbsp;<span>(BEARISH)</span>" );
+                coi_diff.style.color = "red";
+                }
+                else {
+                    if(diff > 0){
+                        $('#col-coi-diff').html(commaSeprated(diff) +" &nbsp;<span style='color:black'>(NEUTRAL)</span>");
+                        coi_diff.style.color = "#32a836";
+                    }
+                    else{
+                        $('#col-coi-diff').html(commaSeprated(diff) +" &nbsp;<span style='color:black'>(NEUTRAL)</span>");
+                        coi_diff.style.color = "red";
+                    }
+                }
+
+              // Add Something after this for continuously update;
+
+            }
+
+          }
+
+
+          $(document).ready(function(){
+            fetchNiftyCont();
+           });
+    </script>
+  </body>
+</html>
